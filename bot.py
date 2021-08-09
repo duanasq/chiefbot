@@ -1,4 +1,5 @@
 import pytest
+import math
 
 def min_energy(heights):
     if (heights == []):
@@ -18,22 +19,13 @@ def min_energy_acc(heights, min_energy_needed):
     last_hurdle = heights[len_heights-1]
     starting_energy = min_energy_needed
 
-    while (is_energy_enough_for_next_jump(min_energy_needed, last_hurdle, starting_energy - 1)):
-        # I can probably optimise this to calculate the exact min starting energy I need
-        starting_energy = starting_energy -1
+    # min_starting_energy + boost = min_needed
+    # min_starting_energy + (min_starting_energy - hurdle) = min_needed
+    # 2*min_starting_energy = min_needed + hurdle
+    # min_starting_energy = ceil((min_needed + hurdle) / 2)
+    min_starting_energy = math.ceil((min_energy_needed + last_hurdle) /2)
 
     return min_energy_acc(heights[:-1], starting_energy)
-
-def is_energy_enough_for_next_jump(min_energy_needed, prev_hurdle, starting_energy):
-    if (starting_energy < prev_hurdle):
-        return False
-
-    boost = starting_energy - prev_hurdle
-    if (starting_energy + boost >= min_energy_needed):
-        return True
-    else:
-        return False
-    
 
 def test_empty():
     m = min_energy([])
@@ -50,11 +42,7 @@ def test_two():
     m = min_energy([3, 4, 3, 2, 4])
     assert(m == 4)
 
-def test_starting_energy_thing():
-    assert(is_energy_enough_for_next_jump(4, 3, 4) == True)
-    assert(is_energy_enough_for_next_jump(4, 3, 3) == False)
-    assert(is_energy_enough_for_next_jump(4, 2, 3) == True)
-    assert(is_energy_enough_for_next_jump(4, 2, 2) == False)
-    assert(is_energy_enough_for_next_jump(4, 4, 4) == True)
+def test_same():
+    assert(min_energy([4,4,4]) == 4)
 
 
